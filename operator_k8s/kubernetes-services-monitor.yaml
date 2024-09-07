@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kubernetes-services
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: .* # Etiqueta general, cambiar si es necesario
+  endpoints:
+    - port: http-metrics # Ajustar si es necesario
+  namespaceSelector:
+    any: true
