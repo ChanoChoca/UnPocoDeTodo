@@ -1,0 +1,32 @@
+apiVersion: apps/v1  # Define la versión de la API utilizada para los objetos de tipo Deployment.
+kind: Deployment  # Especifica el tipo de recurso, en este caso, un despliegue (Deployment).
+metadata:
+  name: msvc-gateway  # Nombre del Deployment, que identifica de manera única el despliegue en el cluster.
+spec:
+  replicas: 1  # Número de réplicas deseadas del pod. En este caso, se desea ejecutar una sola réplica.
+  selector:
+    matchLabels:
+      role: msvc-gateway  # Selector de etiquetas que Kubernetes utiliza para asociar el Deployment con los Pods correspondientes.
+  template:
+    metadata:
+      labels:
+        role: msvc-gateway  # Etiquetas aplicadas a los Pods creados por este template.
+    spec:
+      containers:
+        - name: msvc-gateway  # Nombre del contenedor dentro del Pod.
+          image: chanochoca/gateway:latest  # Imagen de Docker utilizada para crear el contenedor, que incluye la etiqueta `latest`.
+          ports:
+            - containerPort: 8090  # Puerto en el que el contenedor escucha las solicitudes.
+---
+apiVersion: v1  # Define la versión de la API utilizada para los objetos de tipo Service.
+kind: Service  # Especifica el tipo de recurso, en este caso, un servicio (Service).
+metadata:
+  name: msvc-gateway  # Nombre del servicio, que lo identifica de manera única en el cluster.
+spec:
+  type: LoadBalancer  # Tipo de servicio, que expone la aplicación al exterior mediante un balanceador de carga.
+  ports:
+    - protocol: TCP  # Protocolo utilizado por el servicio, en este caso TCP.
+      port: 8090  # Puerto en el que el servicio expone la aplicación hacia el exterior.
+      targetPort: 8090  # Puerto en el que la aplicación dentro del contenedor está escuchando.
+  selector:
+    role: msvc-gateway  # Selector de etiquetas que el servicio utiliza para identificar los Pods que debe gestionar.

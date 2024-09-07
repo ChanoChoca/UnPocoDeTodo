@@ -1,0 +1,48 @@
+# Definición de un ConfigMap para el microservicio de usuarios
+
+apiVersion: v1  # Especifica la versión de la API de Kubernetes utilizada.
+kind: ConfigMap  # Define el tipo de recurso, en este caso, un ConfigMap.
+metadata:
+  name: msvc-usuarios  # Asigna un nombre al ConfigMap, que será "msvc-usuarios".
+data:  # Sección donde se definen las claves y valores de configuración.
+  port: "8001"  # Puerto en el que corre el microservicio de usuarios.
+  db_host: "mysql8:3306"  # Host y puerto de la base de datos MySQL utilizada por el microservicio de usuarios.
+  database: "msvc-usuarios"  # Nombre de la base de datos utilizada por el microservicio de usuarios.
+  # username y password están comentados y se pueden usar para las credenciales de la base de datos. actualmente se usa secret.yaml
+  # username: "root"
+  # password: "chanochoca"
+  curso_url: "msvc-cursos:8002"  # URL para acceder al microservicio de cursos desde el microservicio de usuarios.
+
+  # Configuración YAML embebida dentro del ConfigMap
+  msvc-usuarios.yml: |-
+    config:
+      texto: Configurando ambiente por defecto
+    ---
+    spring:
+      config:
+        activate:
+          on-profile: dev
+    config:
+      texto: Configurando ambiente de desarrollo
+    ---
+    spring:
+      config:
+        activate:
+          on-profile: prod
+    config:
+      texto: Configurando ambiente de produccion
+---
+# Definición de un ConfigMap para el microservicio de cursos
+
+apiVersion: v1  # Especifica la versión de la API de Kubernetes utilizada.
+kind: ConfigMap  # Define el tipo de recurso, en este caso, un ConfigMap.
+metadata:
+  name: msvc-cursos  # Asigna un nombre al ConfigMap, que será "msvc-cursos".
+data:  # Sección donde se definen las claves y valores de configuración.
+  port: "8002"  # Puerto en el que corre el microservicio de cursos.
+  db_host: "postgres16:5432"  # Host y puerto de la base de datos PostgreSQL utilizada por el microservicio de cursos.
+  database: "msvc-cursos"  # Nombre de la base de datos utilizada por el microservicio de cursos.
+  # username y password están comentados y se pueden usar para las credenciales de la base de datos. actualmente se usa secret.yaml
+  # username: "postgres"
+  # password: "postgres"
+  usuario_url: "msvc-usuarios:8001"  # URL para acceder al microservicio de usuarios desde el microservicio de cursos.

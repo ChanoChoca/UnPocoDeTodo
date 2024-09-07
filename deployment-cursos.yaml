@@ -1,0 +1,71 @@
+# Definición de la API y versión utilizada
+apiVersion: apps/v1
+
+# Especifica que este archivo describe un objeto de tipo Deployment
+kind: Deployment
+
+# Metadatos asociados al Deployment
+metadata:
+  # Nombre del Deployment
+  name: msvc-cursos
+
+# Especificaciones del Deployment
+spec:
+  # Número de réplicas (instancias) del pod que se desea ejecutar
+  replicas: 1
+
+  # Selector para identificar los pods gestionados por este Deployment
+  selector:
+    matchLabels:
+      # Etiqueta utilizada para identificar los pods de este Deployment
+      app: msvc-cursos
+
+  # Plantilla para la configuración de los pods
+  template:
+    metadata:
+      # Etiquetas aplicadas a los pods
+      labels:
+        app: msvc-cursos
+
+    # Especificaciones de los contenedores dentro del pod
+    spec:
+      containers:
+        - name: cursos # Nombre del contenedor
+          image: chanochoca/cursos:latest # Imagen de Docker utilizada para el contenedor
+
+          # Puertos expuestos por el contenedor
+          ports:
+            - containerPort: 8002 # Puerto en el que la aplicación escucha
+
+          # Variables de entorno para la configuración del contenedor
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: port
+                  name: msvc-cursos
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: db_host
+                  name: msvc-cursos
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-cursos
+                  key: database
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: msvc-cursos
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: msvc-cursos
+                  key: password
+            - name: USUARIOS_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: usuario_url
+                  name: msvc-cursos

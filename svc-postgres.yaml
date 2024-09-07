@@ -1,0 +1,25 @@
+# Definición de la API y versión utilizada
+apiVersion: v1
+
+# Especifica que este archivo describe un objeto de tipo Service
+kind: Service
+
+# Metadatos asociados al Service
+metadata:
+  # Nombre del Service
+  name: postgres16
+
+# Especificaciones del Service
+spec:
+  # Definición de los puertos que el servicio expondrá
+  ports:
+    - port: 5432 # Puerto en el que el servicio estará disponible
+      protocol: TCP # Protocolo utilizado
+      targetPort: 5432 # Puerto en el contenedor al que se redirige el tráfico
+
+  # Selector para identificar los pods gestionados por este Service
+  selector:
+    role: postgres
+
+  # Tipo de servicio, en este caso ClusterIP para exponer el servicio dentro del clúster
+  type: ClusterIP

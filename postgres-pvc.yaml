@@ -1,0 +1,28 @@
+# Definición de la API y versión utilizada
+apiVersion: v1
+
+# Especifica que este archivo describe un objeto de tipo PersistentVolumeClaim
+kind: PersistentVolumeClaim
+
+# Metadatos asociados al PersistentVolumeClaim
+metadata:
+  # Nombre del PersistentVolumeClaim
+  name: postgres-pvc
+
+# Especificaciones del PersistentVolumeClaim
+spec:
+  # Nombre del PersistentVolume asociado
+  volumeName: postgres-pv
+
+  # Modos de acceso permitidos para el volumen
+  accessModes:
+    - ReadWriteOnce # El volumen puede ser montado en lectura/escritura por un único nodo
+
+  # Clase de almacenamiento utilizada
+  storageClassName: standard
+
+  # Recursos solicitados para el volumen
+  resources:
+    requests:
+      # Espacio de almacenamiento solicitado
+      storage: 2Gi # 2 Gigabytes de almacenamiento (2^11)
