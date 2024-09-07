@@ -1,4 +1,4 @@
-# Spring Boot With Kubernetes
+# Un poco de todo
 
 Un proyecto Spring Boot, que utiliza Postgres (para cursos) y MySQL (para usuarios), Docker para aislar aplicaciones en contenedores y Kubernetes para manejar esos contenedores.
 
@@ -56,12 +56,12 @@ helm install prometheus prometheus-community/kube-prometheus-stack
 ```
 
 Exponer los servicios Prometheus y Grafana
-`kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090:9090`
-`kubectl port-forward service/prometheus-grafana 3000:80`
+- `kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090:9090`
+- `kubectl port-forward service/prometheus-grafana 3000:80`
 
 Obtener contraseña (**la contraseña debe decodificarse en Base 64 con UTF-8:** https://www.base64decode.org/es/)
-`kubectl get secrets`
-`kubectl get secret <secret-name> -o jsonpath="{.data.admin-password}"`
+- `kubectl get secrets`
+- `kubectl get secret <secret-name> -o jsonpath="{.data.admin-password}"`
 
 Para acceder a Prometheus y Grafana: http://localhost:3000 y http://localhost:9090
 
