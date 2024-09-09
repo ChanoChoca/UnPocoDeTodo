@@ -1,13 +1,10 @@
 package org.chanochoca.springcloud.msvc.cursos.repositories;
 
 import org.chanochoca.springcloud.msvc.cursos.models.entity.Curso;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 
-public interface CursoRepository extends CrudRepository<Curso, Long> {
+public interface CursoRepository extends ReactiveCrudRepository<Curso, Long> {
 
-    @Modifying
-    @Query("delete from CursoUsuario cu where cu.usuarioId=?1")
-    void eliminarCursoUsuarioPorId(Long id);
+    Mono<Void> deleteCursoUsuarioByUsuarioId(Long id);
 }

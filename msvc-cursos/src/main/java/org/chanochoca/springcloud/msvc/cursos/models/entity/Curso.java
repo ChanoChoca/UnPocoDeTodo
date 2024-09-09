@@ -1,26 +1,25 @@
 package org.chanochoca.springcloud.msvc.cursos.models.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import org.chanochoca.springcloud.msvc.cursos.models.Usuario;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Table(name="cursos")
 public class Curso {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty
     private String nombre;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "curso_id")
+    @MappedCollection(idColumn = "curso_id")
     private List<CursoUsuario> cursoUsuarios;
 
     //Atributo no persistente

@@ -69,3 +69,44 @@ spec:
                 configMapKeyRef:
                   key: usuario_url
                   name: msvc-cursos
+
+---
+# Definición de la API y versión utilizada
+apiVersion: v1
+
+# Especifica que este archivo describe un objeto de tipo Service
+kind: Service
+
+# Metadatos asociados al Service
+metadata:
+  # Nombre del Service
+  name: msvc-cursos
+
+# Especificaciones del Service
+spec:
+  # Tipo de servicio, en este caso LoadBalancer para balancear la carga
+  type: LoadBalancer
+
+  # Definición de los puertos que el servicio expondrá
+  ports:
+    - port: 8002 # Puerto en el que el servicio estará disponible
+      name: http-trafic-cursos
+      protocol: TCP # Protocolo utilizado
+      targetPort: 8002 # Puerto en el contenedor al que se redirige el tráfico
+
+  # Selector para identificar los pods gestionados por este Service
+  selector:
+    app: msvc-cursos
+
+#---
+#apiVersion: monitoring.coreos.com/v1
+#kind: ServiceMonitor
+#metadata:
+#  name: spring-boot-monitor-cursos
+#spec:
+#  selector:
+#    matchLabels:
+#      app: msvc-cursos
+#  endpoints:
+#    - port: http-traffic
+#      path: "/actuator/prometheus"

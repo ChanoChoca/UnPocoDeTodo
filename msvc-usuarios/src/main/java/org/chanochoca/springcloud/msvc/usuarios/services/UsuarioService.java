@@ -1,18 +1,20 @@
 package org.chanochoca.springcloud.msvc.usuarios.services;
 
 import org.chanochoca.springcloud.msvc.usuarios.models.entity.Usuario;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioService {
-    List<Usuario> listar();
-    Optional<Usuario> porId(Long id);
-    Usuario guardar(Usuario usuario);
-    void eliminar(Long id);
+    Flux<Usuario> listar();
+    Mono<Usuario> porId(Long id);
+    Mono<Usuario> guardar(Usuario usuario);
+    Mono<Void> eliminar(Long id);
 //    Iterable<T> findAllById(Iterable<ID> ids);
-    List<Usuario> listarPorIds(Iterable<Long> ids);
+    Flux<Usuario> listarPorIds(Iterable<Long> ids);
 
-    Optional<Usuario> porEmail(String email);
-    boolean existePorEmail(String email);
+    Mono<Usuario> porEmail(String email);
+    Mono<Boolean> existePorEmail(String email);
 }

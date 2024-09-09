@@ -1,0 +1,156 @@
+# Definición de la API y versión utilizada
+apiVersion: apps/v1
+
+# Especifica que este archivo describe un objeto de tipo Deployment
+kind: Deployment
+
+# Metadatos asociados al Deployment
+metadata:
+  # Nombre del Deployment
+  name: postgres16
+
+# Especificaciones del Deployment
+spec:
+  # Número de réplicas (instancias) del pod que se desea ejecutar
+  replicas: 1
+
+  # Selector para identificar los pods gestionados por este Deployment
+  selector:
+    matchLabels:
+      # Etiqueta utilizada para identificar los pods de este Deployment
+      role: postgres
+
+  # Plantilla para la configuración de los pods
+  template:
+    metadata:
+      # Etiquetas aplicadas a los pods
+      labels:
+        role: postgres
+
+    # Especificaciones de los contenedores dentro del pod
+    spec:
+      containers:
+        - name: postgres16 # Nombre del contenedor
+          image: postgres:16.3-alpine3.20 # Imagen de Docker utilizada para el contenedor
+
+          # Puertos expuestos por el contenedor
+          ports:
+            - containerPort: 5432 # Puerto de PostgreSQL
+
+          # Variables de entorno para la configuración del contenedor
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: msvc-cursos
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: database
+                  name: msvc-cursos
+          # Montajes de volúmenes para persistencia de datos
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: data-postgres
+
+      # Volúmenes asociados al pod para persistencia
+      volumes:
+        - name: data-postgres
+          persistentVolumeClaim:
+            # Nombre del PersistentVolumeClaim para almacenar los datos de PostgreSQL
+            claimName: postgres-pvc
+
+---
+# Definición de la API y versión utilizada
+apiVersion: v1
+
+# Especifica que este archivo describe un objeto de tipo Service
+kind: Service
+
+# Metadatos asociados al Service
+metadata:
+  # Nombre del Service
+  name: postgres16
+
+# Especificaciones del Service
+spec:
+  # Definición de los puertos que el servicio expondrá
+  ports:
+    - port: 5432 # Puerto en el que el servicio estará disponible
+      protocol: TCP # Protocolo utilizado
+      targetPort: 5432 # Puerto en el contenedor al que se redirige el tráfico
+
+  # Selector para identificar los pods gestionados por este Service
+  selector:
+    role: postgres
+
+  # Tipo de servicio, en este caso ClusterIP para exponer el servicio dentro del clúster
+  type: ClusterIP
+
+---
+# Definición de la API y versión utilizada
+apiVersion: v1
+
+# Especifica que este archivo describe un objeto de tipo PersistentVolume
+kind: PersistentVolume
+
+# Metadatos asociados al PersistentVolume
+metadata:
+  # Nombre del PersistentVolume
+  name: postgres-pv
+
+# Especificaciones del PersistentVolume
+spec:
+  # Capacidad de almacenamiento del volumen
+  capacity:
+    # Espacio de almacenamiento disponible en el volumen
+    storage: 2Gi # 2 Gigabytes de almacenamiento
+
+  # Modo del volumen
+  volumeMode: Filesystem # El volumen se montará como un sistema de archivos
+
+  # Clase de almacenamiento utilizada
+  storageClassName: standard
+
+  # Modos de acceso permitidos para el volumen
+  accessModes:
+    - ReadWriteOnce # El volumen puede ser montado en lectura/escritura por un único nodo
+
+  # Fuente del volumen
+  hostPath:
+    # Ruta en el sistema de archivos del host donde se almacenarán los datos
+    path: /var/lib/postgresql/data
+
+    # Tipo de hostPath, crea el directorio si no existe
+    type: DirectoryOrCreate
+
+---
+# Definición de la API y versión utilizada
+apiVersion: v1
+
+# Especifica que este archivo describe un objeto de tipo PersistentVolumeClaim
+kind: PersistentVolumeClaim
+
+# Metadatos asociados al PersistentVolumeClaim
+metadata:
+  # Nombre del PersistentVolumeClaim
+  name: postgres-pvc
+
+# Especificaciones del PersistentVolumeClaim
+spec:
+  # Nombre del PersistentVolume asociado
+  volumeName: postgres-pv
+
+  # Modos de acceso permitidos para el volumen
+  accessModes:
+    - ReadWriteOnce # El volumen puede ser montado en lectura/escritura por un único nodo
+
+  # Clase de almacenamiento utilizada
+  storageClassName: standard
+
+  # Recursos solicitados para el volumen
+  resources:
+    requests:
+      # Espacio de almacenamiento solicitado
+      storage: 2Gi # 2 Gigabytes de almacenamiento (2^11)

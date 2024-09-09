@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app: msvc-usuarios
   endpoints:
-    - port: http # Ajustar si es necesario
+    - port: http-trafic-usuarios # Ajustar si es necesario
       path: /actuator/prometheus
   namespaceSelector:
     matchNames:

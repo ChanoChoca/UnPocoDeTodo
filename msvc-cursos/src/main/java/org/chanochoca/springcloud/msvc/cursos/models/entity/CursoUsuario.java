@@ -1,16 +1,16 @@
 package org.chanochoca.springcloud.msvc.cursos.models.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
 @Table(name = "cursos_usuarios")
 public class CursoUsuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="usuario_id", unique = true)
+    @Column("usuario_id")
     private Long usuarioId;
 
     public CursoUsuario() {}
