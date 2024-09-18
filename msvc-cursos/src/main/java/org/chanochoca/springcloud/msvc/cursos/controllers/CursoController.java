@@ -1,4 +1,4 @@
-//package org.chanochoca.springcloud.msvc.cursos.controllers;
+package org.chanochoca.springcloud.msvc.cursos.controllers;//package org.chanochoca.springcloud.msvc.cursos.controllers;
 //
 //import feign.FeignException;
 //import jakarta.validation.Valid;

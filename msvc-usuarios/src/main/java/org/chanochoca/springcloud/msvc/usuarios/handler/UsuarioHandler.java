@@ -1,6 +1,6 @@
 package org.chanochoca.springcloud.msvc.usuarios.handler;
 
-import org.chanochoca.springcloud.msvc.usuarios.models.entity.Usuario;
+import org.chanochoca.springcloud.msvc.usuarios.entity.Usuario;
 import org.chanochoca.springcloud.msvc.usuarios.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

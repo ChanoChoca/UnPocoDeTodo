@@ -1,4 +1,4 @@
-package org.chanochoca.springcloud.msvc.usuarios.models.entity;
+package org.chanochoca.springcloud.msvc.usuarios.entity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

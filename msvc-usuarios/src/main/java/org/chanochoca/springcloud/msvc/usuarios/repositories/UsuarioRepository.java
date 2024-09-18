@@ -1,6 +1,6 @@
 package org.chanochoca.springcloud.msvc.usuarios.repositories;
 
-import org.chanochoca.springcloud.msvc.usuarios.models.entity.Usuario;
+import org.chanochoca.springcloud.msvc.usuarios.entity.Usuario;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 

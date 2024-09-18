@@ -1,0 +1,17 @@
+#apiVersion: monitoring.coreos.com/v1
+#kind: ServiceMonitor
+#metadata:
+#  name: kafka-servicemonitor
+#  labels:
+#    release: prometheus
+#spec:
+#  selector:
+#    matchLabels:
+#      app: my-kafka
+#  endpoints:
+#    - port: metrics # Asegúrate de que coincida con el nombre del puerto en el Service de Kafka Exporter
+#      path: /metrics
+#      interval: 15s # Intervalo de scraping, ajusta según sea necesario
+#  namespaceSelector:
+#    matchNames:
+#      - default # Cambia esto si Kafka está en otro namespace

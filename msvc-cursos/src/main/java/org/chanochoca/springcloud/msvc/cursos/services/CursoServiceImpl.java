@@ -6,6 +6,7 @@ import org.chanochoca.springcloud.msvc.cursos.models.entity.Curso;
 import org.chanochoca.springcloud.msvc.cursos.models.entity.CursoUsuario;
 import org.chanochoca.springcloud.msvc.cursos.repositories.CursoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -109,4 +110,16 @@ public class CursoServiceImpl implements CursoService {
                         })
                 );
     }
+
+    //Método para Kafka
+//    @KafkaListener(topics = "eliminar_usuario", groupId = "grupo-id-cursos")
+//    public void recibirEliminarUsuario(Long usuarioId) {
+//        // Implementa la lógica para eliminar al usuario de todos los cursos
+//        cursoRepository.findAll()
+//                .flatMap(curso -> {
+//                    Usuario usuario = new Usuario();
+//                    usuario.setId(usuarioId);
+//                    return eliminarUsuario(usuario, curso.getId());
+//                }).subscribe();
+//    }
 }

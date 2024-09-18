@@ -1,11 +1,8 @@
 package org.chanochoca.springcloud.msvc.usuarios.services;
 
-import org.chanochoca.springcloud.msvc.usuarios.models.entity.Usuario;
+import org.chanochoca.springcloud.msvc.usuarios.entity.Usuario;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface UsuarioService {
     Flux<Usuario> listar();
