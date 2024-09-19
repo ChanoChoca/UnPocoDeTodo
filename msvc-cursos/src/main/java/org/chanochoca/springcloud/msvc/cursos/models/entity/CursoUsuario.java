@@ -1,20 +1,21 @@
 package org.chanochoca.springcloud.msvc.cursos.models.entity;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "cursos_usuarios")
+@Table("cursos_usuarios")
 public class CursoUsuario {
 
     @Id
     private Long id;
 
-    @Column("usuario_id")
     private Long usuarioId;
+
+    private Long cursoId;
 
     public CursoUsuario() {}
 
+    // Getters y setters
     public Long getId() {
         return id;
     }
@@ -31,15 +32,23 @@ public class CursoUsuario {
         this.usuarioId = usuarioId;
     }
 
+    public Long getCursoId() {
+        return cursoId;
+    }
+
+    public void setCursoId(Long cursoId) {
+        this.cursoId = cursoId;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) { //Si la instancia es igual a la referencia
+        if (this == obj) {
             return true;
         }
-        if (!(obj instanceof CursoUsuario)) { //Si el objeto no es una instancia de CursoUsuario
+        if (!(obj instanceof CursoUsuario)) {
             return false;
         }
         CursoUsuario o = (CursoUsuario) obj;
-        return this.usuarioId != null && this.usuarioId.equals(o.usuarioId);
+        return this.usuarioId != null && this.usuarioId.equals(o.usuarioId) && this.cursoId != null && this.cursoId.equals(o.cursoId);
     }
 }

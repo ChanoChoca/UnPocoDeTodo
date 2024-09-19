@@ -144,7 +144,7 @@ Para acceder a Prometheus y Grafana: http://localhost:3000 y http://localhost:90
 - **POST /cursos**
   - **Descripción:** Permite crear un nuevo curso.
   - **Cuerpo de la solicitud:**
-    - `{ "nombre": "Nombre del curso", "descripcion": "Descripción del curso" }`
+    - `{ "nombre": "Nombre del curso" }`
   - **Respuesta:**
     - Estado 201 Created si el curso se crea exitosamente.
     - Estado 400 Bad Request si los datos son inválidos.
@@ -154,7 +154,7 @@ Para acceder a Prometheus y Grafana: http://localhost:3000 y http://localhost:90
   - **Parámetros de ruta:**
     - `id` - ID del curso a actualizar.
   - **Cuerpo de la solicitud:**
-    - `{ "nombre": "Nombre actualizado", "descripcion": "Descripción actualizada" }`
+    - `{ "nombre": "Nombre actualizado" }`
   - **Respuesta:**
     - Estado 201 Created si el curso se actualiza exitosamente.
     - Estado 404 Not Found si el curso no se encuentra.
@@ -173,7 +173,7 @@ Para acceder a Prometheus y Grafana: http://localhost:3000 y http://localhost:90
   - **Parámetros de ruta:**
     - `cursoId` - ID del curso al que se asignará el usuario.
   - **Cuerpo de la solicitud:**
-    - `{ "id": "ID del usuario", "nombre": "Nombre del usuario", "email": "Email del usuario" }`
+    - `{ "id": "ID del usuario", "nombre": "Nombre del usuario", "email": "Email del usuario", "password": "Contraseña del usuario" }`
   - **Respuesta:**
     - Estado 201 Created si el usuario se asigna exitosamente.
     - Estado 404 Not Found si ocurre un error en la asignación.

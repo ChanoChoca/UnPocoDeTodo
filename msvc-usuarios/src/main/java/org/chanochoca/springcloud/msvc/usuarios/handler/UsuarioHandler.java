@@ -65,6 +65,8 @@ public class UsuarioHandler {
                         .toList())
                 .orElse(Collections.emptyList());
 
+        System.out.println("Verificación: " + ids.size());
+
         return usuarioService.listarPorIds(ids)
                 .collectList()
                 .flatMap(users -> ServerResponse.ok().bodyValue(users))

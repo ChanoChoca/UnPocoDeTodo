@@ -1,6 +1,7 @@
 package org.chanochoca.springcloud.msvc.cursos.models;
 //POJO Class, para poder obtener los datos dede el otro microservicio
 //y poder representarlo como un objeto
+
 public class Usuario {
     private Long id;
 
@@ -11,6 +12,13 @@ public class Usuario {
     private String password;
 
     public Usuario () {}
+
+    public Usuario (Usuario usuario) {
+        this.id = usuario.getId();
+        this.nombre = usuario.getNombre();
+        this.email = usuario.getEmail();
+        this.password = usuario.getPassword();
+    }
 
     public Long getId() {
         return id;

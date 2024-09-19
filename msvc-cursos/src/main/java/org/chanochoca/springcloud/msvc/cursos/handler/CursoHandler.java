@@ -34,7 +34,8 @@ public class CursoHandler {
         return request.bodyToMono(Curso.class)
                 .flatMap(curso -> cursoService.guardar(curso))
                 .flatMap(cursoDb -> ServerResponse.status(201).bodyValue(cursoDb))
-                .onErrorResume(e -> ServerResponse.badRequest().bodyValue("Error al crear curso"));
+                .onErrorResume(e ->
+                        ServerResponse.badRequest().bodyValue("Error al crear curso: " + e.getMessage()));
     }
 
     public Mono<ServerResponse> editar(ServerRequest request) {
@@ -61,17 +62,22 @@ public class CursoHandler {
     public Mono<ServerResponse> asignarUsuario(ServerRequest request) {
         Long cursoId = Long.valueOf(request.pathVariable("cursoId"));
         return request.bodyToMono(Usuario.class)
-                .flatMap(usuario -> cursoService.asignarUsuario(usuario, cursoId))
+                .flatMap(usuario -> {
+                    // Imprimir la información del usuario
+                    System.out.println("Usuario recibido: " + usuario);
+                    return cursoService.asignarUsuario(usuario, cursoId);
+                })
                 .flatMap(usuarioAsignado -> ServerResponse.status(201).bodyValue(usuarioAsignado))
                 .onErrorResume(e -> ServerResponse.badRequest().bodyValue("Error al asignar usuario"));
     }
+
 
     public Mono<ServerResponse> crearUsuario(ServerRequest request) {
         Long cursoId = Long.valueOf(request.pathVariable("cursoId"));
         return request.bodyToMono(Usuario.class)
                 .flatMap(usuario -> cursoService.crearUsuario(usuario, cursoId))
                 .flatMap(usuarioCreado -> ServerResponse.status(201).bodyValue(usuarioCreado))
-                .onErrorResume(e -> ServerResponse.badRequest().bodyValue("Error al crear usuario"));
+                .onErrorResume(e -> ServerResponse.badRequest().bodyValue("Error al crear usuario: " + e.getMessage()));
     }
 
     public Mono<ServerResponse> eliminarUsuario(ServerRequest request) {

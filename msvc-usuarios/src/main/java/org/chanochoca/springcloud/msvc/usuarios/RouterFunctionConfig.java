@@ -15,10 +15,10 @@ public class RouterFunctionConfig {
     @Bean
     public RouterFunction<ServerResponse> routes(UsuarioHandler handler) {
 
-        return route(GET("/usuarios/crash"), handler::crash)
+        return route(GET("/usuarios/usuarios-por-curso"), handler::obtenerUsuariosPorCurso)
+                .andRoute(GET("/usuarios/crash"), handler::crash)
                 .andRoute(GET("/usuarios"), handler::listar)
                 .andRoute(GET("/usuarios/{id}"), handler::detalle)
-                .andRoute(GET("/usuarios/usuarios-por-curso"), handler::obtenerUsuariosPorCurso)
                 .andRoute(POST("/usuarios"), handler::crear)
                 .andRoute(PUT("/usuarios/{id}"), handler::editar)
                 .andRoute(DELETE("/usuarios/{id}"), handler::eliminar);
