@@ -9,6 +9,8 @@ A diferencia de la rama principal, esta rama sirve para implementar en AWS ECS u
 
 ## Configuration Steps
 
+In the AWS Console, follow these steps:
+
 ### Virtual Private Cloud (VPC)
 
 1. **Create a new VPC**:
@@ -26,7 +28,7 @@ A diferencia de la rama principal, esta rama sirve para implementar en AWS ECS u
 You should see something similar to the following (in resource map of the selected VPC).
 ![Main image](img.png)
 
-### Security Groups
+### Security Groups (EC2)
 
 1. **Create Security Group for Microservices (sgMsvc)**:
     - Description: *Service Group for Microservices*.
@@ -51,7 +53,7 @@ You should see something similar to the following (in resource map of the select
 2. **Subnets**: Ensure the VPC subnets are added (in this case: `us-east-1a`, `us-east-1b`, `us-east-1c`).
 3. **Associate Security Group for each Subnet**: Link `sgNfs`.
 
-### Target Groups
+### Target Groups (EC2)
 
 1. **Create Target Groups**: `tgUsuarios` and `tgCursos`.
     - Select IP addresses.
@@ -70,7 +72,7 @@ You should see something similar to the following (in resource map of the select
             - Interval: 300.
             - Success codes: 200.
 
-### Load Balancers
+### Load Balancers (EC2)
 
 1. **Create Application Load Balancer**: `lbUsuarios` and `lbCursos`.
     - Internet-facing, IPv4.
@@ -90,7 +92,7 @@ You should see something similar to the following (in resource map of the select
     - Search for `AmazonECSTaskExecutionRolePolicy`, select, then next.
     - Role Name: `ECSTaskExecutionRole`, then create role.
 
-### Task Definitions
+### Task Definitions (ECS)
 
 #### Task Definition for `msvc-usuarios`
 
@@ -174,7 +176,7 @@ You should see something similar to the following (in resource map of the select
       - Source volume: `data-postgres`
       - Container path: `/var/lib/postgresql/data` (Read-only: No).
 
-### Cluster and Service Deployment
+### Cluster and Service Deployment (ECS)
 
 1. **Create Cluster**: `curso-aws`.
 
@@ -191,6 +193,10 @@ You should see something similar to the following (in resource map of the select
     - Use existing listeners and target groups as needed.
 
 **Enjoy!**
+
+**You can test it in Load Balancers, copy DNS name of one Load Balancer and paste in the browser**
+
+- Example: lbUsuarios-2063028740.us-east-1.elb.amazonaws.com:8001/usuarios
 
 **Also you may use API Gateway for handle one URL for this two deployments, or use RDS to easily manage databases, feel free to do this.**
 
