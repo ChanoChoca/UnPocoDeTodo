@@ -23,7 +23,6 @@ COPY ./msvc-gateway/pom.xml .
 
 # Ejecutar Maven para limpiar y empaquetar el proyecto sin ejecutar las pruebas y eliminando el directorio target
 RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip -Dspring-boot.repackage.skip && rm -r ./target/
-# Nota: La línea comentada `RUN ./mvnw dependency:go-offline` es una alternativa que descarga la mayoría de las dependencias y, al compilar, descarga algunas adicionales.
 
 # Copiar el código fuente de la aplicación desde el host al directorio src dentro del contenedor
 COPY ./msvc-gateway/src ./src

@@ -97,16 +97,3 @@ spec:
   # Selector para identificar los pods gestionados por este Service
   selector:
     app: msvc-cursos
-
-#---
-#apiVersion: monitoring.coreos.com/v1
-#kind: ServiceMonitor
-#metadata:
-#  name: spring-boot-monitor-cursos
-#spec:
-#  selector:
-#    matchLabels:
-#      app: msvc-cursos
-#  endpoints:
-#    - port: http-traffic
-#      path: "/actuator/prometheus"

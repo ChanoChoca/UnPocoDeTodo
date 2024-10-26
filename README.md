@@ -33,8 +33,7 @@ Un proyecto Spring Boot, que utiliza Postgres (para cursos) y MySQL (para usuari
 
 Aplicar archivos de monitorización:
 ``` bash
-cd operator_k8s
-kubectl apply -f .
+kubectl apply -f monitoring/
 ```
 
 Instalar Brew y Helm
