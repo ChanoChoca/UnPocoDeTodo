@@ -4,13 +4,195 @@ A diferencia de la rama principal, esta rama sirve para implementar en AWS ECS u
 
 ## Tabla de Contenidos
 
-1. [Instalación](#instalación)
+1. [Configuration Steps](#configuration-steps)
 2. [Endpoints](#endpoints)
 
+## Configuration Steps
 
-# Instalación
+### Virtual Private Cloud (VPC)
 
-Proximamente añadiré el procedimiento desde AWS Console.
+1. **Create a new VPC**:
+    - Enable **Auto-generate**, desired name. 
+    - IPv4 CIDR block, with IP range `10.0.0.0/16`.
+    - No IPv6 CIDR block.
+    - **Tenancy**: Default.
+    - **Number of Availability Zones (AZs)**: 3.
+    - **Number of subnets**: 3 public and 3 private.
+    - **NAT Gateway**: None.
+    - **VPC Endpoints**: None.
+    - **DNS Options**: Enable DNS hostnames and DNS resolution.
+    - **Additional tags**: None.
+
+You should see something similar to the following (in resource map of the selected VPC).
+![Main image](img.png)
+
+### Security Groups
+
+1. **Create Security Group for Microservices (sgMsvc)**:
+    - Description: *Service Group for Microservices*.
+    - Select the created VPC.
+    - **Inbound Rules**:
+        - TCP, Port 8001, Source: Anywhere (IPv4).
+        - TCP, Port 8002, Source: Anywhere (IPv4).
+    - **Outbound Rules**:
+        - All traffic, Destination: Anywhere (IPv4).
+
+2. **Create Security Group for EFS (sgNfs)**:
+    - Description: *Service Group for EFS*.
+    - Select the created VPC.
+    - **Inbound Rules**:
+        - NFS, Source: `sgMsvc`.
+    - **Outbound Rules**:
+        - All traffic, Destination: Anywhere (IPv4).
+
+### Elastic File System (EFS)
+
+1. **EFS Names**: Use `datos-postgres`, after create for `datos-mysql`, and the created VPC.
+2. **Subnets**: Ensure the VPC subnets are added (in this case: `us-east-1a`, `us-east-1b`, `us-east-1c`).
+3. **Associate Security Group for each Subnet**: Link `sgNfs`.
+
+### Target Groups
+
+1. **Create Target Groups**: `tgUsuarios` and `tgCursos`.
+    - Select IP addresses.
+    - Protocol: HTTP on port 8001 or 8002 (as applicable).
+    - IP address type: IPv4.
+    - Select created VPC.
+    - Protocol version: HTTP1.
+    - **Health Checks**:
+        - HTTP protocol 
+        - Path: `/usuarios` or `/cursos` (as applicable).
+        - **Advanced Settings**:
+            - Health check port: Traffic port.
+            - Healthy threshold: 5.
+            - Unhealthy threshold: 2.
+            - Timeout: 60.
+            - Interval: 300.
+            - Success codes: 200.
+
+### Load Balancers
+
+1. **Create Application Load Balancer**: `lbUsuarios` and `lbCursos`.
+    - Internet-facing, IPv4.
+    - Select created VPC.
+    - Select all available public subnets.
+    - Associate with security group `sgMsvc`.
+    - Modify the listener port from 80 to 8001 or 8002 (as applicable), protocol HTTP.
+    - Associate with the relevant target group.
+
+### IAM
+
+1. **Create ECS role**: in Access management -> Roles.
+    - Search for `AWSServiceRoleForECS`, select and create role.
+    - Select AWS service.
+    - Use case: `Elastic Container Service`.
+    - Select Elastic Container Service Task, then next.
+    - Search for `AmazonECSTaskExecutionRolePolicy`, select, then next.
+    - Role Name: `ECSTaskExecutionRole`, then create role.
+
+### Task Definitions
+
+#### Task Definition for `msvc-usuarios`
+
+1. **Basic Configuration**:
+    - Family: `msvc-usuarios`.
+    - Platform: AWS Fargate.
+    - OS: Linux/X86_64, 1vCPU, 2GB.
+    - Task role: None.
+    - Execution role: Use the created role.
+
+2. **Container 1**: `msvc-usuarios`
+    - Image: `chanochoca/usuarios:latest`.
+    - Essential container: No.
+    - Port mapping: 8001 (TCP).
+    - CPU: 1, Memory hard: 1GB, Memory soft: 1GB.
+    - **Environment Variables**:
+        - `CURSOS_URL`: `<loadbalancerCursos>:<port>`.
+        - `DB_DATABASE`: `msvc-usuarios`.
+        - `DB_HOST`: `localhost:3306`.
+        - `DB_PASSWORD`: `chanochoca`.
+        - `DB_USERNAME`: `root`.
+        - `PORT`: `8001`.
+    - Enable log collection.
+
+3. **Container 2**: `mysql8`
+    - Image: `mysql:8`.
+    - Essential container: Yes.
+    - Port mapping: 3306 (TCP).
+    - CPU: 0, Memory hard: 1GB, Memory soft: 1GB.
+    - **Environment Variables**:
+        - `MYSQL_DATABASE`: `msvc-usuarios`.
+        - `MYSQL_ROOT_PASSWORD`: `chanochoca`.
+
+4. **Storage**:
+    - Volume: `data-mysql`.
+    - Configure at task definition creation.
+    - File system: EFS `datos-mysql`, root directory `/`, access point id `None`.
+    - Container Mount point: 
+      - Container: `mysql8`
+      - Source volume: `data-mysql`
+      - Container path: `/var/lib/mysql` (Read-only: No).
+
+#### Task Definition for `msvc-cursos`
+
+1. **Basic Configuration**:
+    - Family: `msvc-cursos`.
+    - Platform: AWS Fargate.
+    - OS: Linux/X86_64, 1vCPU, 2GB.
+    - Task role: None.
+    - Execution role: Use the created role.
+
+2. **Container 1**: `msvc-cursos`
+    - Image: `chanochoca/cursos:latest`.
+    - Essential container: No.
+    - Port mapping: 8002 (TCP).
+    - CPU: 1, Memory hard: 1GB, Memory soft: 1GB.
+    - **Environment Variables**:
+        - `USUARIOS_URL`: `<loadbalancerUsuarios>:<port>`.
+        - `DB_DATABASE`: `msvc-cursos`.
+        - `DB_HOST`: `localhost:5432`.
+        - `DB_PASSWORD`: `postgres`.
+        - `DB_USERNAME`: `postgres`.
+        - `PORT`: `8002`.
+    - Enable log collection.
+
+3. **Container 2**: `postgres16`
+    - Image: `postgres:16.4-alpine3.20`.
+    - Essential container: Yes.
+    - Port mapping: 5432 (TCP).
+    - CPU: 0, Memory hard: 1GB, Memory soft: 1GB.
+    - **Environment Variables**:
+        - `POSTGRES_DB`: `msvc-cursos`.
+        - `POSTGRES_PASSWORD`: `postgres`.
+
+4. **Storage**:
+    - Volume: `data-postgres`.
+    - Configure at task definition creation.
+    - File system: EFS `datos-postgres`, root directory `/`, access point id `None`.
+    - Container Mount point:
+      - Container: `postgres16`
+      - Source volume: `data-postgres`
+      - Container path: `/var/lib/postgresql/data` (Read-only: No).
+
+### Cluster and Service Deployment
+
+1. **Create Cluster**: `curso-aws`.
+
+2. **Deploy Services**:
+    - Select task definitions for `msvc-usuarios` and `msvc-cursos`, then select deploy and Create service.
+    - Select in Existing cluster: the created cluster.
+    - Select in Compute options: Launch Type.
+    - Set service name to `usuarios` or `cursos` as appropriate.
+    - Select the created VPC and all subnets, then select only the security group `sgMsvc`.
+    - Enable Public IP.
+    - In Load balancing, select `Application Load Balancer`.
+    - Select Container for load balancing: `msvc-cursos 8002:8002` or `msvc-usuarios 8001:8001`.
+    - Select an existing load balancer (`lbUsuarios` or `lbCursos`).
+    - Use existing listeners and target groups as needed.
+
+**Enjoy!**
+
+**Also you may use API Gateway for handle one URL for this two deployments, or use RDS to easily manage databases, feel free to do this.**
 
 
 ## Endpoints
