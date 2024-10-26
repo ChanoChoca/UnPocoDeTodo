@@ -2,7 +2,9 @@
 
 Un proyecto Spring Boot, que utiliza Postgres (para cursos) y MySQL (para usuarios), Docker para aislar aplicaciones en contenedores y Kubernetes para manejar esos contenedores.
 
-![Main image](images/img.png)
+![Main image](img.png)
+
+Puedes implementar AWS en el siguiente enlace: [Rama AWS](https://github.com/ChanoChoca/UnPocoDeTodo/tree/aws)
 
 ## Tabla de Contenidos
 
