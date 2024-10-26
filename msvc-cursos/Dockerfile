@@ -23,7 +23,6 @@ COPY ./msvc-cursos/pom.xml .
 
 # Ejecutar Maven para limpiar y empaquetar el proyecto sin ejecutar las pruebas y eliminando el directorio target
 RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip -Dspring-boot.repackage.skip && rm -r ./target/
-# Nota: La línea comentada `RUN ./mvnw dependency:go-offline` es una alternativa que descarga la mayoría de las dependencias y, al compilar, descarga algunas adicionales.
 
 # Copiar el código fuente de la aplicación desde el host al directorio src dentro del contenedor
 COPY ./msvc-cursos/src ./src
@@ -45,4 +44,4 @@ COPY --from=builder /app/msvc-cursos/target/msvc-cursos-0.0.1-SNAPSHOT.jar .
 EXPOSE 8002
 
 # Definir el comando de entrada para ejecutar la aplicación Java
-CMD ["java", "-jar", "msvc-cursos-0.0.1-SNAPSHOT.jar"]
+CMD sleep 20 && java -jar msvc-cursos-0.0.1-SNAPSHOT.jar

@@ -27,7 +27,6 @@ COPY ./$MSVC_NAME/pom.xml .
 
 # Run Maven to clean and package the project without running tests and deleting the target directory
 RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip -Dspring-boot.repackage.skip && rm -r ./target/
-# Note: The commented line `RUN ./mvnw dependency:go-offline` is an alternative that downloads most of the dependencies and, when compiling, downloads some additional ones.
 
 #Copy the application source code from the host to the src directory in the container
 COPY ./$MSVC_NAME/src ./src
@@ -55,6 +54,5 @@ ENV PORT $PORT_APP
 # Expose port 8001 to allow application access
 EXPOSE $PORT
 
-#CMD sleep 20 && java -jar msvc-usuarios-0.0.1-SNAPSHOT.jar
 # Defines the input command to run the Java application
-CMD ["java", "-jar", "msvc-usuarios-0.0.1-SNAPSHOT.jar"]
+CMD sleep 20 && java -jar msvc-usuarios-0.0.1-SNAPSHOT.jar
