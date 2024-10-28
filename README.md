@@ -31,7 +31,32 @@ Puedes implementar AWS en el siguiente enlace: [Rama AWS](https://github.com/Cha
 
 ### ¿Qué hay de diferente en esta rama?
 
-### Por ahora es muy similar al proyecto Kubernetes, pero agregandole Prometheus y Grafana, el proyecto Kubernetes lo puedes encontrar aquí: https://github.com/ChanoChoca/SpringBootKubernetes
+### Es muy similar al proyecto Kubernetes, pero de forma completamente reactiva, y agregandole Prometheus y Grafana.
+
+- Aplicar los PVC y PV (Persistent Volume Claims y Persistent Volume)
+``` bash
+kubectl apply -f .\postgres-pv.yaml -f .\postgres-pvc.yaml -f .\mysql-pv.yaml -f .\mysql-pvc.yaml
+```
+- Aplicar `secret.yaml`
+``` bash
+kubectl apply -f .\secret.yaml 
+```
+- Aplicar `svc-postgres.yaml` y `svc-mysql.yaml`
+``` bash
+kubectl apply -f .\svc-postgres.yaml -f .\svc-mysql.yaml
+```
+- Aplicar `deployment-postgres.yaml` y `deployment-mysql.yaml`
+``` bash
+kubectl apply -f .\deployment-postgres.yaml -f .\deployment-mysql.yaml
+```
+- Aplicar `svc-usuarios.yaml` y `svc-cursos.yaml`
+``` bash
+kubectl apply -f .\svc-usuarios.yaml -f .\svc-cursos.yaml
+```
+- Aplicar `deployment-usuarios.yaml`, `deployment-cursos.yaml` y `gateway.yaml`
+``` bash
+kubectl apply -f .\deployment-usuarios.yaml -f .\deployment-cursos.yaml -f .\gateway.yaml
+```
 
 Aplicar archivos de monitorización:
 ``` bash
