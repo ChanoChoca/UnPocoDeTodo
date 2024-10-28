@@ -36,7 +36,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Mono<Void> eliminar(Long id) {
         return usuarioRepository.deleteById(id)
-                .then(Mono.fromRunnable(() -> client.eliminarCursoUsuarioPorId(id)));
+                .flatMap(deleted -> client.eliminarCursoUsuarioPorId(id)).then();
     }
 
     @Override

@@ -6,16 +6,18 @@ import com.chanochoca.springcloud.msvc.cursos.models.entity.Curso;
 import com.chanochoca.springcloud.msvc.cursos.models.entity.CursoUsuario;
 import com.chanochoca.springcloud.msvc.cursos.repositories.CursoRepository;
 import com.chanochoca.springcloud.msvc.cursos.repositories.CursoUsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CursoServiceImpl implements CursoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioClientRest.class);
 
     private final CursoRepository cursoRepository;
     private final CursoUsuarioRepository cursoUsuarioRepository;
@@ -40,33 +42,37 @@ public class CursoServiceImpl implements CursoService {
                                 curso.setCursoUsuarios(cursoUsuarios);
 
                                 // Ahora obtenemos los usuarios basados en los cursoUsuarios
-                                List<Long> usuarioIds = cursoUsuarios.stream()
-                                        .map(CursoUsuario::getUsuarioId)
-                                        .collect(Collectors.toList());
+                                Flux<Long> usuarioIds = Flux.fromStream(cursoUsuarios.stream()
+                                        .map(CursoUsuario::getUsuarioId));
 
-                                // Si no hay usuarios relacionados, devolvemos el curso directamente
-                                if (usuarioIds.isEmpty()) {
-                                    curso.setUsuarios(Collections.emptyList());
-                                    return Flux.just(curso);
-                                }
-
-                                // Si hay usuarios, los buscamos en el cliente
-                                return client.obtenerAlumnosPorCurso(usuarioIds)
+                                // Convertir usuarioIds a una lista para su uso posterior
+                                return usuarioIds
                                         .collectList()
-                                        .map(usuarios -> {
-                                            // Si no se encuentran usuarios, se asigna una lista vacía
-                                            curso.setUsuarios(usuarios.isEmpty() ? Collections.emptyList() : usuarios);
-                                            return curso;
-                                        })
-                                        .onErrorResume(error -> {
-                                            // En caso de error en la llamada al cliente, se asigna una lista vacía de usuarios
-                                            curso.setUsuarios(Collections.emptyList());
-                                            return Mono.just(curso);
-                                        })
-                                        .flux();
+                                        .flatMapMany(ids -> {
+                                            if (ids.isEmpty()) {
+                                                curso.setUsuarios(Collections.emptyList());
+                                                return Flux.just(curso);
+                                            }
+
+                                            // Llamar al cliente con la lista de IDs
+                                            return client.obtenerAlumnosPorCurso(Flux.fromIterable(ids)) // Cambiado a Flux.fromIterable
+                                                    .collectList()
+                                                    .map(usuarios -> {
+                                                        // Si no se encuentran usuarios, se asigna una lista vacía
+                                                        curso.setUsuarios(usuarios.isEmpty() ? Collections.emptyList() : usuarios);
+                                                        return curso;
+                                                    })
+                                                    .onErrorResume(error -> {
+                                                        // En caso de error en la llamada al cliente, se asigna una lista vacía de usuarios
+                                                        curso.setUsuarios(Collections.emptyList());
+                                                        return Mono.just(curso);
+                                                    });
+                                        });
                             });
                 });
     }
+
+
 
     @Override
     public Mono<Curso> porId(Long id) {
@@ -97,23 +103,27 @@ public class CursoServiceImpl implements CursoService {
                                 curso.setCursoUsuarios(cursoUsuarios);
 
                                 // Obtener los IDs de los usuarios a partir de CursoUsuarios
-                                List<Long> usuarioIds = cursoUsuarios.stream()
-                                        .map(CursoUsuario::getUsuarioId)
-                                        .collect(Collectors.toList());
+                                Flux<Long> usuarioIds = Flux.fromStream(cursoUsuarios.stream()
+                                        .map(CursoUsuario::getUsuarioId));
 
-                                if (!usuarioIds.isEmpty()) {
-                                    // Obtener los usuarios por IDs de forma reactiva
-                                    return client.obtenerAlumnosPorCurso(usuarioIds)
-                                            .collectList()
-                                            .map(usuarios -> {
-                                                // Asignar los usuarios al curso
-                                                curso.setUsuarios(usuarios);
-                                                return curso;
-                                            });
-                                } else {
-                                    // Si no hay usuarios relacionados, devolvemos el curso sin usuarios
-                                    return Mono.just(curso);
-                                }
+                                // Convertir usuarioIds a una lista para su uso posterior
+                                return usuarioIds
+                                        .collectList()
+                                        .flatMap(ids -> {
+                                            // Obtener los usuarios por IDs de forma reactiva
+                                            return client.obtenerAlumnosPorCurso(Flux.fromIterable(ids)) // Cambiado a Flux.fromIterable
+                                                    .collectList()
+                                                    .map(usuarios -> {
+                                                        // Asignar los usuarios al curso
+                                                        curso.setUsuarios(usuarios);
+                                                        return curso;
+                                                    })
+                                                    .onErrorResume(error -> {
+                                                        // En caso de error, se asigna una lista vacía de usuarios
+                                                        curso.setUsuarios(Collections.emptyList());
+                                                        return Mono.just(curso);
+                                                    });
+                                        });
                             });
                 });
     }
@@ -139,7 +149,7 @@ public class CursoServiceImpl implements CursoService {
         return cursoRepository.findById(cursoId)
                 .flatMap(curso -> client.detalle(usuario.getId())
                         .flatMap(usuarioMsvc -> {
-                            System.out.println("Usuario test: " + usuarioMsvc.getEmail() + usuarioMsvc.getId());
+                            logger.info("Usuario obtenido: email = {}, id = {}", usuarioMsvc.getEmail(), usuarioMsvc.getId());
                             CursoUsuario cursoUsuario = new CursoUsuario();
                             cursoUsuario.setUsuarioId(usuarioMsvc.getId());
                             cursoUsuario.setCursoId(cursoId);
@@ -162,8 +172,11 @@ public class CursoServiceImpl implements CursoService {
                             CursoUsuario cursoUsuario = new CursoUsuario();
                             cursoUsuario.setUsuarioId(usuarioNuevoMsvc.getId());
                             cursoUsuario.setCursoId(cursoId);
-                            System.out.println("Mensaje: " + cursoUsuario.getCursoId() + cursoUsuario.getUsuarioId());
+                            logger.info("Mensaje: {}{}", cursoUsuario.getCursoId(), cursoUsuario.getUsuarioId());
                             return cursoUsuarioRepository.save(cursoUsuario)
+                                    .doOnSuccess(savedCursoUsuario ->
+                                            logger.info("Usuario asignado al curso: cursoId = {}, usuarioId = {}", cursoUsuario.getCursoId(), cursoUsuario.getUsuarioId())
+                                    )
                                     .thenReturn(usuarioNuevoMsvc);
                         })
                 );
