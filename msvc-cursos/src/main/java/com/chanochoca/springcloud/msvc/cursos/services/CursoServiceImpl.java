@@ -6,7 +6,6 @@ import com.chanochoca.springcloud.msvc.cursos.models.entity.Curso;
 import com.chanochoca.springcloud.msvc.cursos.models.entity.CursoUsuario;
 import com.chanochoca.springcloud.msvc.cursos.repositories.CursoRepository;
 import com.chanochoca.springcloud.msvc.cursos.repositories.CursoUsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,7 +21,6 @@ public class CursoServiceImpl implements CursoService {
     private final CursoUsuarioRepository cursoUsuarioRepository;
     private final UsuarioClientRest client;
 
-    @Autowired
     public CursoServiceImpl(CursoRepository cursoRepository, CursoUsuarioRepository cursoUsuarioRepository, UsuarioClientRest client) {
         this.cursoRepository = cursoRepository;
         this.cursoUsuarioRepository = cursoUsuarioRepository;

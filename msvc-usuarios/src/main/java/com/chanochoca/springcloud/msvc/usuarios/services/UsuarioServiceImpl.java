@@ -3,8 +3,6 @@ package com.chanochoca.springcloud.msvc.usuarios.services;
 import com.chanochoca.springcloud.msvc.usuarios.clients.CursoClienteRest;
 import com.chanochoca.springcloud.msvc.usuarios.entity.Usuario;
 import com.chanochoca.springcloud.msvc.usuarios.repositories.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,7 +13,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final CursoClienteRest client;
 
-    @Autowired
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository, CursoClienteRest client) {
         this.usuarioRepository = usuarioRepository;
         this.client = client;

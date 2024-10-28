@@ -3,7 +3,6 @@ package com.chanochoca.springcloud.msvc.cursos.handler;
 import com.chanochoca.springcloud.msvc.cursos.models.Usuario;
 import com.chanochoca.springcloud.msvc.cursos.models.entity.Curso;
 import com.chanochoca.springcloud.msvc.cursos.services.CursoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -14,7 +13,6 @@ public class CursoHandler {
 
     private final CursoService cursoService;
 
-    @Autowired
     public CursoHandler(CursoService cursoService) {
         this.cursoService = cursoService;
     }

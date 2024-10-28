@@ -1,7 +1,7 @@
 package com.chanochoca.springcloud.msvc.cursos.clients;
 
 import com.chanochoca.springcloud.msvc.cursos.models.Usuario;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,14 +14,19 @@ import java.util.stream.StreamSupport;
 @Component
 public class UsuarioClientRest {
 
-    @Value("${ubication}/usuarios")
-    private static String ubication;
+    @Value("${ubication}")
+    private String ubication;
 
-    private final WebClient webClient;
+    private WebClient webClient;
 
-    @Autowired
-    public UsuarioClientRest(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl(ubication).build();
+    public UsuarioClientRest() {
+    }
+
+    @PostConstruct
+    public void init() {
+        this.webClient = WebClient.builder()
+                .baseUrl("http://" + ubication + "/usuarios")
+                .build();
     }
 
     public Mono<Usuario> detalle(Long id) {
