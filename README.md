@@ -1,6 +1,7 @@
 # Un poco de todo
 
 A diferencia de la rama principal, esta rama sirve para implementar en AWS ECS un clúster, con dos deployment, cada uno con ELB, con volúmen EFS asociadas a las bases de datos.
+La siguiente implementación es completamente gratuita usando la capa gratuita de AWS.
 
 ## Tabla de Contenidos
 
@@ -26,7 +27,8 @@ In the AWS Console, follow these steps:
     - **Additional tags**: None.
 
 You should see something similar to the following (in resource map of the selected VPC).
-![Main image](img.png)
+
+![Main image](images/img.png)
 
 ### Security Groups (EC2)
 
@@ -104,7 +106,7 @@ You should see something similar to the following (in resource map of the select
     - Execution role: Use the created role.
 
 2. **Container 1**: `msvc-usuarios`
-    - Image: `chanochoca/usuarios:latest`.
+    - Image: `chanochoca/usuarios:aws`.
     - Essential container: No.
     - Port mapping: 8001 (TCP).
     - CPU: 1, Memory hard: 1GB, Memory soft: 1GB.
@@ -145,7 +147,7 @@ You should see something similar to the following (in resource map of the select
     - Execution role: Use the created role.
 
 2. **Container 1**: `msvc-cursos`
-    - Image: `chanochoca/cursos:latest`.
+    - Image: `chanochoca/cursos:aws`.
     - Essential container: No.
     - Port mapping: 8002 (TCP).
     - CPU: 1, Memory hard: 1GB, Memory soft: 1GB.
@@ -193,6 +195,8 @@ You should see something similar to the following (in resource map of the select
     - Use existing listeners and target groups as needed.
 
 **Enjoy!**
+
+![Main image](images/img2.png)
 
 **You can test it in Load Balancers, copy DNS name of one Load Balancer and paste in the browser**
 

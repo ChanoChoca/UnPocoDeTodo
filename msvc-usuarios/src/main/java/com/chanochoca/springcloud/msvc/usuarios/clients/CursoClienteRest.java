@@ -1,5 +1,6 @@
 package com.chanochoca.springcloud.msvc.usuarios.clients;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -9,14 +10,19 @@ import reactor.core.publisher.Mono;
 @Component
 public class CursoClienteRest {
 
-    @Value("${ubication}/cursos")
+    @Value("${ubication}")
     private String ubication;
 
-    private final WebClient webClient;
+    private WebClient webClient;
 
-    @Autowired
-    public CursoClienteRest(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl(ubication).build();
+    public CursoClienteRest() {
+    }
+
+    @PostConstruct
+    public void init() {
+        this.webClient = WebClient.builder()
+                .baseUrl("http://" + ubication + "/cursos")
+                .build();
     }
 
     public Mono<Void> eliminarCursoUsuarioPorId(Long id) {

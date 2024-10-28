@@ -2,7 +2,6 @@ package com.chanochoca.springcloud.msvc.usuarios.handler;
 
 import com.chanochoca.springcloud.msvc.usuarios.entity.Usuario;
 import com.chanochoca.springcloud.msvc.usuarios.services.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
@@ -24,7 +23,6 @@ public class UsuarioHandler {
     private final UsuarioService usuarioService;
     private final Environment env;
 
-    @Autowired
     public UsuarioHandler(UsuarioService usuarioService, Environment env) {
         this.usuarioService = usuarioService;
         this.env = env;
